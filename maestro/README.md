@@ -1,9 +1,7 @@
-# Maestro BPMN Exports
+# Maestro (UiPath BPMN) — Platform Lead
 
-This folder will contain UiPath Maestro BPMN process exports.
+This directory holds the UiPath Maestro BPMN process and DMN decision table.
 
-Added by Siddhant (Person A) during Week 2-3.
-
-## Files (coming Week 2)
-- `vendor_risk_process.bpmn` — main process export
-- `dmn_risk_routing.dmn` — DMN decision table export
+Status: in progress. The BPMN process orchestrates the same flow the Python `agent/`
+pipeline implements — Agent 1 → slim → Agent 2 → DMN gateway → human task → audit —
+but as a runnable Maestro process inside UiPath.
