@@ -34,6 +34,17 @@ from pydantic import BaseModel
 # pipeline.py must be in the same directory as this file
 from pipeline import process_vendor
 
+
+def _normalize_completeness(value):
+    """process_vendor() returns data_completeness as a DataCompleteness enum.
+    str(enum) yields 'DataCompleteness.full' — we need the bare 'full'.
+    This handles enum, 'DataCompleteness.full', and plain 'full' alike."""
+    s = str(value)
+    if "." in s:
+        s = s.split(".")[-1]
+    return s.lower()
+
+
 app = FastAPI(
     title="Vendor Risk Pipeline API",
     description="Adversarial dual-agent vendor due-diligence pipeline for Themis/UiPath Maestro",
@@ -89,7 +100,7 @@ def assess_vendor(vendor_name: str):
     if hasattr(agent1_raw, "risk_score"):
         risk_score              = int(agent1_raw.risk_score)
         red_flags               = list(agent1_raw.red_flags or [])
-        data_completeness       = str(agent1_raw.data_completeness or "partial")
+        data_completeness       = _normalize_completeness(agent1_raw.data_completeness or "partial")
         conflicting_data        = bool(agent1_raw.conflicting_data)
         pred_mult_flag          = bool(agent1_raw.predictive_multiplicity_flag)
         new_entity_flag         = bool(agent1_raw.new_entity_no_history)
@@ -97,7 +108,7 @@ def assess_vendor(vendor_name: str):
     elif isinstance(agent1_raw, dict):
         risk_score              = int(agent1_raw.get("risk_score", 50))
         red_flags               = list(agent1_raw.get("red_flags", []))
-        data_completeness       = str(agent1_raw.get("data_completeness", "partial"))
+        data_completeness       = _normalize_completeness(agent1_raw.get("data_completeness", "partial"))
         conflicting_data        = bool(agent1_raw.get("conflicting_data", False))
         pred_mult_flag          = bool(agent1_raw.get("predictive_multiplicity_flag", False))
         new_entity_flag         = bool(agent1_raw.get("new_entity_no_history", False))
